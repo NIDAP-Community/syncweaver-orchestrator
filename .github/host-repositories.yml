@@ -1,4 +1,5 @@
 hosts:
-  - repository: NIDAP-Community/MOSuite-create
-    lockfile: .syncweaver-lock.json
   - repository: NIDAP-Community/demo-syncweaver-host-capsule
+  - repository: NIDAP-Community/MOSuite-create
+  - repository: NIDAP-Community/MOSuite-normalize-counts
+  - repository: NIDAP-Community/MOSuite-batch-correct-counts
