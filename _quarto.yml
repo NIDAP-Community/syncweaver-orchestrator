@@ -14,7 +14,7 @@ website:
   navbar:
     left:
       - text: Home
-        href: README.md
+        href: index.qmd
       - href: dashboard.qmd
     right:
       - icon: github
