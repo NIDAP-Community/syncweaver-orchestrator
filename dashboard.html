@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Open pull requests in host repositories">
 
-<title>Pull Requests – syncweaver-orchestrator</title>
+<title>Dashboard – syncweaver-orchestrator</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -256,12 +257,12 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./README.md"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./dashboard.html" aria-current="page"> 
-<span class="menu-text">Pull Requests</span></a>
+<span class="menu-text">Dashboard</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
@@ -291,9 +292,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Pull Requests</h1>
+<h1 class="title">Dashboard</h1>
 </div>
 
+<div>
+  <div class="description">
+    Open pull requests in host repositories
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -314,7 +320,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div id="0f1075ac" class="cell" data-execution_count="1">
+<div id="a3b09be0" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
 <script type="module">
     const { set_or_remove_dark_class } = await import(window._itables_2_8_1);
@@ -412,15 +418,9 @@ This is the <code>init_notebook_mode</code> cell from ITables v2.8.1<br>
 </noscript>
 </div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/itables/typing.py:306: SyntaxWarning: These arguments are not documented in ITableOptions: {'searching', 'escape'}. You can silence this warning by setting `itables.options.warn_on_undocumented_option=False`. If you believe ITableOptions should be updated, please make a PR or open an issue at https://github.com/mwouts/itables
-  warnings.warn(
-/opt/hostedtoolcache/Python/3.14.6/x64/lib/python3.14/site-packages/itables/typing.py:306: SyntaxWarning: These arguments are not documented in DTForITablesOptions: {'searching', 'escape'}. You can silence this warning by setting `itables.options.warn_on_undocumented_option=False`. If you believe ITableOptions should be updated, please make a PR or open an issue at https://github.com/mwouts/itables
-  warnings.warn(</code></pre>
-</div>
 <div class="cell-output cell-output-display">
 <!--| quarto-html-table-processing: none -->
-<table id="itables_a6146211_26a3_4be5_8a22_fc70e573f01d">
+<table id="itables_bee45249_4e82_4717_982e_fbc124774d17">
   <tbody>
     <tr>
       <td style="vertical-align:middle; text-align:left"><a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
@@ -491,7 +491,7 @@ This is the <code>init_notebook_mode</code> cell from ITables v2.8.1<br>
         async function init() {
             const { ITable, jQuery: $ } = await window._itables_2_8_1;
 
-            document.querySelectorAll("#itables_a6146211_26a3_4be5_8a22_fc70e573f01d:not(.dataTable)").forEach(table => {
+            document.querySelectorAll("#itables_bee45249_4e82_4717_982e_fbc124774d17:not(.dataTable)").forEach(table => {
                 if (!(table instanceof HTMLTableElement))
                     return;
 
@@ -499,12 +499,10 @@ This is the <code>init_notebook_mode</code> cell from ITables v2.8.1<br>
           "classes": ["display", "compact", "stripe", "hover"],
           "column_filters": "header",
           "data_json": "[[\"-\", \"-\", \"-\", \"-\", \"-\", \"No open pull requests\"]]",
-          "escape": false,
           "layout": {"bottomEnd": null, "bottomStart": null, "topEnd": null, "topStart": null},
           "order": [[0, "asc"]],
           "pageLength": 25,
           "paging": true,
-          "searching": true,
           "style": {"caption-side": "bottom", "margin": "auto", "table-layout": "auto", "width": "auto"},
           "table_html": "<table><thead><th>Repo</th><th>PR title</th><th>Opened by</th><th>Assignee</th><th>Reviewer</th><th>CI checks</th></thead></table>",
           "text_in_header_can_be_selected": true

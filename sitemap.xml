@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://NIDAP-Community.github.io/syncweaver-orchestrator/LICENSE.html</loc>
-    <lastmod>2026-07-09T19:55:26.690Z</lastmod>
+    <loc>https://NIDAP-Community.github.io/syncweaver-orchestrator/index.html</loc>
+    <lastmod>2026-07-09T20:11:17.228Z</lastmod>
   </url>
   <url>
     <loc>https://NIDAP-Community.github.io/syncweaver-orchestrator/dashboard.html</loc>
-    <lastmod>2026-07-09T19:55:26.696Z</lastmod>
+    <lastmod>2026-07-09T20:11:17.228Z</lastmod>
+  </url>
+  <url>
+    <loc>https://NIDAP-Community.github.io/syncweaver-orchestrator/LICENSE.html</loc>
+    <lastmod>2026-07-09T20:11:17.222Z</lastmod>
   </url>
 </urlset>
