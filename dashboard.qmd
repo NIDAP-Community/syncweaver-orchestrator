@@ -1,5 +1,6 @@
 ---
-title: "Pull Requests"
+title: "Dashboard"
+description: "Open pull requests in host repositories"
 date-modified: today
 execute:
   echo: false
@@ -152,8 +153,7 @@ if token_notice or error_html:
 init_notebook_mode(all_interactive=True)
 show(
 	table_df,
-	escape=False,
-	searching=True,
+	allow_html=True,
 	paging=True,
 	pageLength=25,
 	order=[[0, "asc"]],
