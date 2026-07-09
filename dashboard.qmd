@@ -1,0 +1,164 @@
+---
+title: "Pull Requests"
+date-modified: today
+execute:
+  echo: false
+---
+
+```{python}
+import html
+import os
+from pathlib import Path
+
+import pandas as pd
+import requests
+import yaml
+from IPython.display import HTML, display
+from itables import init_notebook_mode, show
+
+API_BASE = "https://api.github.com"
+HOST_REPOSITORIES_PATH = Path(".github/host-repositories.yml")
+
+
+def github_headers() -> dict[str, str]:
+	"""Create request headers for GitHub API calls."""
+	token = os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
+	headers = {
+		"Accept": "application/vnd.github+json",
+		"X-GitHub-Api-Version": "2022-11-28",
+	}
+	if token:
+		headers["Authorization"] = f"Bearer {token}"
+	return headers
+
+
+def read_host_repositories(path: Path) -> list[str]:
+	"""Read host repositories from host-repositories.yml."""
+	payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+	hosts = payload.get("hosts", [])
+	repositories = [host.get("repository", "").strip() for host in hosts]
+	return [repository for repository in repositories if repository]
+
+
+def summarize_gha_checks(repository: str, commit_sha: str, headers: dict[str, str]) -> str:
+	"""Summarize GitHub Actions check-runs for a pull request head commit."""
+	response = requests.get(
+		f"{API_BASE}/repos/{repository}/commits/{commit_sha}/check-runs",
+		headers=headers,
+		timeout=30,
+	)
+	if not response.ok:
+		return f"API {response.status_code}"
+
+	check_runs = response.json().get("check_runs", [])
+	if not check_runs:
+		return "No checks"
+
+	statuses = [run.get("status", "") for run in check_runs]
+	completed_runs = [run for run in check_runs if run.get("status") == "completed"]
+	conclusions = [run.get("conclusion") for run in completed_runs]
+
+	if any(status != "completed" for status in statuses):
+		state = "In progress"
+	elif conclusions and all(conclusion in {"success", "neutral", "skipped"} for conclusion in conclusions):
+		state = "Passing"
+	elif any(conclusion in {"failure", "cancelled", "timed_out", "action_required", "startup_failure"} for conclusion in conclusions):
+		state = "Failing"
+	else:
+		state = "Completed"
+
+	return f"{state} ({len(check_runs)})"
+
+
+def fetch_open_pull_requests(repository: str, headers: dict[str, str]) -> tuple[list[dict[str, str]], list[str]]:
+	"""Fetch open pull requests and selected metadata for one repository."""
+	response = requests.get(
+		f"{API_BASE}/repos/{repository}/pulls",
+		params={"state": "open", "per_page": 100},
+		headers=headers,
+		timeout=30,
+	)
+	if not response.ok:
+		return [], [f"{repository}: failed to fetch pull requests (HTTP {response.status_code})"]
+
+	pull_requests = response.json()
+	rows: list[dict[str, str]] = []
+	for pr in pull_requests:
+		assignees = ", ".join(user.get("login", "") for user in pr.get("assignees", [])) or "-"
+		requested_reviewers = ", ".join(user.get("login", "") for user in pr.get("requested_reviewers", []))
+		requested_teams = ", ".join(team.get("name", "") for team in pr.get("requested_teams", []))
+		reviewer = ", ".join(filter(None, [requested_reviewers, requested_teams])) or "-"
+
+		rows.append(
+			{
+				"Repo": repository,
+				"PR title": (
+					f'<a href="{html.escape(pr.get("html_url", "#"), quote=True)}" '
+					f'target="_blank" rel="noopener noreferrer">'
+					f'{html.escape(pr.get("title", "(untitled)"))}</a>'
+				),
+				"Opened by": pr.get("user", {}).get("login", "-"),
+				"Assignee": assignees,
+				"Reviewer": reviewer,
+				"CI checks": summarize_gha_checks(repository, pr.get("head", {}).get("sha", ""), headers),
+			}
+		)
+
+	return rows, []
+
+
+headers = github_headers()
+repositories = read_host_repositories(HOST_REPOSITORIES_PATH)
+
+all_rows: list[dict[str, str]] = []
+errors: list[str] = []
+
+for repository in repositories:
+	rows, fetch_errors = fetch_open_pull_requests(repository, headers)
+	all_rows.extend(rows)
+	errors.extend(fetch_errors)
+
+if not all_rows:
+	all_rows = [
+		{
+			"Repo": "-",
+			"PR title": "-",
+			"Opened by": "-",
+			"Assignee": "-",
+			"Reviewer": "-",
+			"CI checks": "No open pull requests",
+		}
+	]
+
+table_df = pd.DataFrame(
+	all_rows,
+	columns=["Repo", "PR title", "Opened by", "Assignee", "Reviewer", "CI checks"],
+)
+
+token_notice = ""
+if not (os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")):
+	token_notice = (
+		"<p><strong>Note:</strong> Rendering without a GitHub token may be rate limited.</p>"
+	)
+
+error_html = ""
+if errors:
+	joined = "".join(f"<li>{item}</li>" for item in errors)
+	error_html = f"<details><summary>API warnings</summary><ul>{joined}</ul></details>"
+
+if token_notice or error_html:
+	display(HTML(f"{token_notice}{error_html}"))
+
+init_notebook_mode(all_interactive=True)
+show(
+	table_df,
+	escape=False,
+	searching=True,
+	paging=True,
+	pageLength=25,
+	order=[[0, "asc"]],
+	column_filters="header",
+	classes=["display", "compact", "stripe", "hover"],
+)
+```
+

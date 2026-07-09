@@ -1,0 +1,37 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "syncweaver-orchestrator"
+  site-url: https://NIDAP-Community.github.io/syncweaver-orchestrator
+  repo-url: https://github.com/NIDAP-Community/syncweaver-orchestrator
+  repo-actions: [edit, issue]
+  search:
+    location: navbar
+    type: textbox
+  page-navigation: true
+  navbar:
+    left:
+      - text: Home
+        href: README.md
+      - href: dashboard.qmd
+    right:
+      - icon: github
+        href: https://github.com/NIDAP-Community/syncweaver-orchestrator
+
+  page-footer:
+    background: black
+    foreground: white
+    left: |
+      Created by the
+      [CCR Collaborative Bioinformatics Resource](https://github.com/CCBR)
+
+execute:
+  freeze: auto
+  eval: true
+  echo: true
+
+format:
+  fnl-html:
+    code-fold: show
