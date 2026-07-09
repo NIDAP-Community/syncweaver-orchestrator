@@ -28,7 +28,6 @@ website:
       [CCR Collaborative Bioinformatics Resource](https://github.com/CCBR)
 
 execute:
-  freeze: auto
   eval: true
   echo: true
 

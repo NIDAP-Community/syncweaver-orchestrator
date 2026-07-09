@@ -1,2 +1,6 @@
+/.vscode/
 /.quarto/
 **/*.quarto_ipynb
+/_freeze/
+/_site/
+/*_files/
