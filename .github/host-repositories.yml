@@ -1,5 +1,6 @@
 hosts:
   - repository: NIDAP-Community/demo-syncweaver-host-capsule
   - repository: NIDAP-Community/MOSuite-create
+  - repository: NIDAP-Community/MOSuite-clean
   - repository: NIDAP-Community/MOSuite-normalize-counts
   - repository: NIDAP-Community/MOSuite-batch-correct-counts
