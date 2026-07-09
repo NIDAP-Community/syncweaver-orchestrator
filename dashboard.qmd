@@ -2,6 +2,7 @@
 title: "Dashboard"
 description: "Open pull requests in host repositories"
 date-modified: today
+page-layout: full
 execute:
   echo: false
 ---
@@ -71,6 +72,39 @@ def summarize_gha_checks(repository: str, commit_sha: str, headers: dict[str, st
 	return f"{state} ({len(check_runs)})"
 
 
+def summarize_review_approval(repository: str, pull_number: int, headers: dict[str, str]) -> str:
+	"""Summarize the latest submitted review state per reviewer."""
+	response = requests.get(
+		f"{API_BASE}/repos/{repository}/pulls/{pull_number}/reviews",
+		headers=headers,
+		timeout=30,
+	)
+	if not response.ok:
+		return f"API {response.status_code}"
+
+	reviews = response.json()
+	latest_states: dict[str, str] = {}
+	for review in reviews:
+		reviewer = review.get("user", {}).get("login")
+		state = (review.get("state") or "").upper()
+		if reviewer and state:
+			latest_states[reviewer] = state
+
+	if not latest_states:
+		return "No reviews"
+
+	states = set(latest_states.values())
+	if "CHANGES_REQUESTED" in states:
+		return "Changes requested"
+	if "APPROVED" in states:
+		return "Approved"
+	if states == {"COMMENTED"}:
+		return "Commented"
+	if "DISMISSED" in states:
+		return "Dismissed"
+	return "Review pending"
+
+
 def fetch_open_pull_requests(repository: str, headers: dict[str, str]) -> tuple[list[dict[str, str]], list[str]]:
 	"""Fetch open pull requests and selected metadata for one repository."""
 	response = requests.get(
@@ -101,7 +135,8 @@ def fetch_open_pull_requests(repository: str, headers: dict[str, str]) -> tuple[
 				"Opened by": pr.get("user", {}).get("login", "-"),
 				"Assignee": assignees,
 				"Reviewer": reviewer,
-				"CI checks": summarize_gha_checks(repository, pr.get("head", {}).get("sha", ""), headers),
+				"Review status": summarize_review_approval(repository, pr.get("number", 0), headers),
+				"CI status": summarize_gha_checks(repository, pr.get("head", {}).get("sha", ""), headers),
 			}
 		)
 
@@ -127,13 +162,14 @@ if not all_rows:
 			"Opened by": "-",
 			"Assignee": "-",
 			"Reviewer": "-",
-			"CI checks": "No open pull requests",
+			"Review status": "-",
+			"CI status": "No open pull requests",
 		}
 	]
 
 table_df = pd.DataFrame(
 	all_rows,
-	columns=["Repo", "PR title", "Opened by", "Assignee", "Reviewer", "CI checks"],
+	columns=["Repo", "PR title", "Opened by", "Assignee", "Reviewer", "Review status", "CI status"],
 )
 
 token_notice = ""
