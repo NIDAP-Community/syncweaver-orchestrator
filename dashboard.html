@@ -280,14 +280,14 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -302,7 +302,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page">
 
     
   
@@ -320,7 +320,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div id="6059349b" class="cell" data-execution_count="1">
+<div id="bdbfc802" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
 <script type="module">
     const { set_or_remove_dark_class } = await import(window._itables_2_8_1);
@@ -420,7 +420,7 @@ This is the <code>init_notebook_mode</code> cell from ITables v2.8.1<br>
 </div>
 <div class="cell-output cell-output-display">
 <!--| quarto-html-table-processing: none -->
-<table id="itables_4aa0ab3a_7ae2_4586_b8b5_7e6d4a7bc361">
+<table id="itables_fc6a5599_94ce_43fd_98be_c59c583fb80c">
   <tbody>
     <tr>
       <td style="vertical-align:middle; text-align:left"><a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
@@ -491,20 +491,20 @@ This is the <code>init_notebook_mode</code> cell from ITables v2.8.1<br>
         async function init() {
             const { ITable, jQuery: $ } = await window._itables_2_8_1;
 
-            document.querySelectorAll("#itables_4aa0ab3a_7ae2_4586_b8b5_7e6d4a7bc361:not(.dataTable)").forEach(table => {
+            document.querySelectorAll("#itables_fc6a5599_94ce_43fd_98be_c59c583fb80c:not(.dataTable)").forEach(table => {
                 if (!(table instanceof HTMLTableElement))
                     return;
 
                 let dt_args = {
           "classes": ["display", "compact", "stripe", "hover"],
           "column_filters": "header",
-          "data_json": "[[\"-\", \"-\", \"-\", \"-\", \"-\", \"No open pull requests\"]]",
+          "data_json": "[[\"NIDAP-Community/MOSuite-filter-counts\", \"<a href=\\\"https://github.com/NIDAP-Community/MOSuite-filter-counts/pull/4\\\" target=\\\"_blank\\\" rel=\\\"noopener noreferrer\\\">chore(syncweaver): initialize syncweaver &amp; vendor CCBR/MOSuite</a>\", \"kelly-sovacool\", \"kelly-sovacool\", \"-\", \"No reviews\", \"Passing (2)\"]]",
           "layout": {"bottomEnd": null, "bottomStart": null, "topEnd": null, "topStart": null},
           "order": [[0, "asc"]],
           "pageLength": 25,
           "paging": true,
           "style": {"caption-side": "bottom", "margin": "auto", "table-layout": "auto", "width": "auto"},
-          "table_html": "<table><thead><th>Repo</th><th>PR title</th><th>Opened by</th><th>Assignee</th><th>Reviewer</th><th>CI checks</th></thead></table>",
+          "table_html": "<table><thead><th>Repo</th><th>PR title</th><th>Opened by</th><th>Assignee</th><th>Reviewer</th><th>Review status</th><th>CI status</th></thead></table>",
           "text_in_header_can_be_selected": true
         };
                 new ITable(table, dt_args);
