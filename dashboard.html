@@ -42,10 +42,12 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-6ef148e04309af98f5800017c4cfc7de.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-95d86bad09a6ca11867430c4d25546ae.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6ef148e04309af98f5800017c4cfc7de.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-192fa974fcc98d0b84ac5402cbbd512f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-9af8220283360d23d611991f7fe8a3a3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-815248a5e96887f97402b12b77b5766c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-9af8220283360d23d611991f7fe8a3a3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,7 +81,7 @@ ul.task-list li input[type="checkbox"] {
 
 </head>
 
-<body class="nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -221,8 +223,10 @@ ul.task-list li input[type="checkbox"] {
         changeGiscusTheme();
       }
     };
-    const authorPrefersDark = true;
+    const authorPrefersDark = false;
     const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
@@ -320,7 +324,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div id="c8ee4780" class="cell" data-execution_count="1">
+<div id="3cf395c9" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
 <script type="module">
     const { set_or_remove_dark_class } = await import(window._itables_2_8_1);
@@ -420,7 +424,7 @@ This is the <code>init_notebook_mode</code> cell from ITables v2.8.1<br>
 </div>
 <div class="cell-output cell-output-display">
 <!--| quarto-html-table-processing: none -->
-<table id="itables_71f5ff55_dec3_45ed_8048_5ae4717de487">
+<table id="itables_bf8b70e3_1398_418e_a94a_09e2debb6fc9">
   <tbody>
     <tr>
       <td style="vertical-align:middle; text-align:left"><a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
@@ -491,7 +495,7 @@ This is the <code>init_notebook_mode</code> cell from ITables v2.8.1<br>
         async function init() {
             const { ITable, jQuery: $ } = await window._itables_2_8_1;
 
-            document.querySelectorAll("#itables_71f5ff55_dec3_45ed_8048_5ae4717de487:not(.dataTable)").forEach(table => {
+            document.querySelectorAll("#itables_bf8b70e3_1398_418e_a94a_09e2debb6fc9:not(.dataTable)").forEach(table => {
                 if (!(table instanceof HTMLTableElement))
                     return;
 
