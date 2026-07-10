@@ -5,3 +5,4 @@ hosts:
 - repository: NIDAP-Community/MOSuite-filter-counts
 - repository: NIDAP-Community/MOSuite-normalize-counts
 - repository: NIDAP-Community/MOSuite-batch-correct-counts
+- repository: NIDAP-Community/MOSuite-diff-counts
