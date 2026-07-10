@@ -7,3 +7,4 @@ hosts:
 - repository: NIDAP-Community/MOSuite-batch-correct-counts
 - repository: NIDAP-Community/MOSuite-diff-counts
 - repository: NIDAP-Community/MOSuite-filter-diff
+- repository: NIDAP-Community/MOSuite-plot-pca-2D
