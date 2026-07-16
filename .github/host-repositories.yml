@@ -12,3 +12,4 @@ hosts:
 - repository: NIDAP-Community/MOSuite-plot-pca-3D
 - repository: NIDAP-Community/MOSuite-plot-volcano-summary
 - repository: NIDAP-Community/MOSuite-plot-venn-diagram
+- repository: NIDAP-Community/MOSuite-write-moo-properties
