@@ -10,3 +10,4 @@ hosts:
 - repository: NIDAP-Community/MOSuite-plot-expr-heatmap
 - repository: NIDAP-Community/MOSuite-plot-pca-2D
 - repository: NIDAP-Community/MOSuite-plot-pca-3D
+- repository: NIDAP-Community/MOSuite-plot-volcano-summary
