@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "syncweaver-orchestrator",
+    "section": "",
+    "text": "https://nidap-community.github.io/syncweaver-orchestrator/dashboard.html"
+  },
+  {
     "objectID": "LICENSE.html",
     "href": "LICENSE.html",
     "title": "syncweaver-orchestrator",
@@ -12,12 +19,5 @@
     "title": "Dashboard",
     "section": "",
     "text": "This is the init_notebook_mode cell from ITables v2.9.1\n(you should not see this message - is your notebook trusted?)\n\n\n\n\n\n\n  \n    \n      \n    \n        \n        \n        \n        \n        \n        \n        \n        \n    \n    \n   \n    \n      \n  \n        \n    \n    \n  \n        \n    \n    \n  \n        \n    \n      \n  \n        \n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n        \n    \n\n\n        Loading ITables v2.9.1 from the init_notebook_mode cell...\n        (need help?)\n      \n    \n  \n\n🔒ⓘRepoPR titleOpened byAssigneeReviewerReview statusCI status\n------No open pull requests"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "syncweaver-orchestrator",
-    "section": "",
-    "text": "https://nidap-community.github.io/syncweaver-orchestrator/dashboard.html"
   }
 ]
