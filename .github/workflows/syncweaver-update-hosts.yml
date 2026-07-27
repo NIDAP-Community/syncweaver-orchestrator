@@ -16,7 +16,7 @@ on:
         description: syncweaver version/ref to install (e.g. version tag, branch name, or commit SHA). Will use docker image if available.
         required: true
         type: string
-        default: "main"
+        default: "latest"
 
 permissions:
   contents: read
@@ -31,7 +31,7 @@ jobs:
     env:
       SOURCE_REPOSITORY_RAW: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_repository || github.event.inputs.source_repo || '' }}
       SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
-      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload['syncweaver-version'] || github.event.inputs['syncweaver-version'] || 'main' }}
+      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload['syncweaver-version'] || github.event.inputs['syncweaver-version'] || 'latest' }}
     steps:
       - name: Validate source ref
         shell: bash
@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup syncweaver
-        uses: CCBR/syncweaver/actions/setup-syncweaver@main
+        uses: CCBR/syncweaver/actions/setup-syncweaver@latest
         with:
           syncweaver-version: ${{ env.SYNCWEAVER_VERSION }}
 
