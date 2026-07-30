@@ -3,4 +3,6 @@
 **/*.quarto_ipynb
 /_freeze/
 /_site/
-/*_files/
+/*_files/# pixi environments
+.pixi/*
+!.pixi/config.toml
