@@ -5,7 +5,8 @@ on:
     - cron: "43 2 * * *"
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches:
+      - main
   pull_request:
     paths:
       - "_quarto.yml"
@@ -13,7 +14,8 @@ on:
       - "*.md"
       - ".github/workflows/docs-quarto.yml"
   release:
-    types: [published]
+    types:
+      - published
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
