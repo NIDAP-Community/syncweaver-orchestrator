@@ -1,6 +1,6 @@
 ---
 title: "Dashboard"
-description: "Open pull requests in host repositories"
+description: ""
 date-modified: today
 page-layout: full
 execute:
@@ -10,6 +10,7 @@ execute:
 ```{python}
 import html
 import os
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -20,6 +21,8 @@ from itables import init_notebook_mode, show
 
 API_BASE = "https://api.github.com"
 HOST_REPOSITORIES_PATH = Path(".github/host-repositories.yml")
+CODEOWNERS_CANDIDATE_PATHS = ("CODEOWNERS", ".github/CODEOWNERS", "docs/CODEOWNERS")
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 def github_headers() -> dict[str, str]:
@@ -42,71 +45,64 @@ def read_host_repositories(path: Path) -> list[str]:
 	return [repository for repository in repositories if repository]
 
 
-def summarize_gha_checks(repository: str, commit_sha: str, headers: dict[str, str]) -> str:
-	"""Summarize GitHub Actions check-runs for a pull request head commit."""
-	response = requests.get(
-		f"{API_BASE}/repos/{repository}/commits/{commit_sha}/check-runs",
-		headers=headers,
-		timeout=30,
+def build_link(url: str, text: str) -> str:
+	"""Build an HTML anchor tag for a table cell."""
+	return (
+		f'<a href="{html.escape(url, quote=True)}" '
+		f'target="_blank" rel="noopener noreferrer">{html.escape(text)}</a>'
 	)
-	if not response.ok:
-		return f"API {response.status_code}"
-
-	check_runs = response.json().get("check_runs", [])
-	if not check_runs:
-		return "No checks"
-
-	statuses = [run.get("status", "") for run in check_runs]
-	completed_runs = [run for run in check_runs if run.get("status") == "completed"]
-	conclusions = [run.get("conclusion") for run in completed_runs]
-
-	if any(status != "completed" for status in statuses):
-		state = "In progress"
-	elif conclusions and all(conclusion in {"success", "neutral", "skipped"} for conclusion in conclusions):
-		state = "Passing"
-	elif any(conclusion in {"failure", "cancelled", "timed_out", "action_required", "startup_failure"} for conclusion in conclusions):
-		state = "Failing"
-	else:
-		state = "Completed"
-
-	return f"{state} ({len(check_runs)})"
 
 
-def summarize_review_approval(repository: str, pull_number: int, headers: dict[str, str]) -> str:
-	"""Summarize the latest submitted review state per reviewer."""
-	response = requests.get(
-		f"{API_BASE}/repos/{repository}/pulls/{pull_number}/reviews",
-		headers=headers,
-		timeout=30,
-	)
-	if not response.ok:
-		return f"API {response.status_code}"
+def codeowner_link(owner: str) -> str:
+	"""Build a link for a single CODEOWNERS entry (GitHub user, team, or email)."""
+	handle = owner[1:] if owner.startswith("@") else owner
 
-	reviews = response.json()
-	latest_states: dict[str, str] = {}
-	for review in reviews:
-		reviewer = review.get("user", {}).get("login")
-		state = (review.get("state") or "").upper()
-		if reviewer and state:
-			latest_states[reviewer] = state
+	if EMAIL_PATTERN.match(handle):
+		return build_link(f"mailto:{handle}", owner)
 
-	if not latest_states:
-		return "No reviews"
+	if "/" in handle:
+		org, _, team = handle.partition("/")
+		return build_link(f"https://github.com/orgs/{org}/teams/{team}", owner)
 
-	states = set(latest_states.values())
-	if "CHANGES_REQUESTED" in states:
-		return "Changes requested"
-	if "APPROVED" in states:
-		return "Approved"
-	if states == {"COMMENTED"}:
-		return "Commented"
-	if "DISMISSED" in states:
-		return "Dismissed"
-	return "Review pending"
+	return build_link(f"https://github.com/{handle}", owner)
 
 
-def fetch_open_pull_requests(repository: str, headers: dict[str, str]) -> tuple[list[dict[str, str]], list[str]]:
-	"""Fetch open pull requests and selected metadata for one repository."""
+def format_codeowners(owners: list[str]) -> str:
+	"""Format a list of CODEOWNERS entries as linked HTML, or '-' if none."""
+	if not owners:
+		return "-"
+	return ", ".join(codeowner_link(owner) for owner in owners)
+
+
+def fetch_default_codeowner(repository: str, headers: dict[str, str]) -> list[str]:
+	"""Fetch the default (wildcard `*`) owners listed in the repository's CODEOWNERS file."""
+	content = None
+	for path in CODEOWNERS_CANDIDATE_PATHS:
+		response = requests.get(
+			f"{API_BASE}/repos/{repository}/contents/{path}",
+			headers={**headers, "Accept": "application/vnd.github.raw+json"},
+			timeout=30,
+		)
+		if response.ok:
+			content = response.text
+			break
+
+	if content is None:
+		return []
+
+	for line in content.splitlines():
+		stripped = line.strip()
+		if not stripped or stripped.startswith("#"):
+			continue
+		pattern, *owners = stripped.split()
+		if pattern == "*" and owners:
+			return owners
+
+	return []
+
+
+def fetch_open_pull_request_count(repository: str, headers: dict[str, str]) -> int | None:
+	"""Fetch the number of open pull requests for a repository."""
 	response = requests.get(
 		f"{API_BASE}/repos/{repository}/pulls",
 		params={"state": "open", "per_page": 100},
@@ -114,33 +110,66 @@ def fetch_open_pull_requests(repository: str, headers: dict[str, str]) -> tuple[
 		timeout=30,
 	)
 	if not response.ok:
-		return [], [f"{repository}: failed to fetch pull requests (HTTP {response.status_code})"]
+		return None
+	return len(response.json())
 
-	pull_requests = response.json()
-	rows: list[dict[str, str]] = []
-	for pr in pull_requests:
-		assignees = ", ".join(user.get("login", "") for user in pr.get("assignees", [])) or "-"
-		requested_reviewers = ", ".join(user.get("login", "") for user in pr.get("requested_reviewers", []))
-		requested_teams = ", ".join(team.get("name", "") for team in pr.get("requested_teams", []))
-		reviewer = ", ".join(filter(None, [requested_reviewers, requested_teams])) or "-"
 
-		rows.append(
-			{
-				"Repo": repository,
-				"PR title": (
-					f'<a href="{html.escape(pr.get("html_url", "#"), quote=True)}" '
-					f'target="_blank" rel="noopener noreferrer">'
-					f'{html.escape(pr.get("title", "(untitled)"))}</a>'
-				),
-				"Opened by": pr.get("user", {}).get("login", "-"),
-				"Assignee": assignees,
-				"Reviewer": reviewer,
-				"Review status": summarize_review_approval(repository, pr.get("number", 0), headers),
-				"CI status": summarize_gha_checks(repository, pr.get("head", {}).get("sha", ""), headers),
-			}
-		)
+def fetch_latest_release(repository: str, headers: dict[str, str]) -> tuple[str, str]:
+	"""Fetch the latest release tag name and URL for a repository."""
+	releases_url = f"https://github.com/{repository}/releases"
+	response = requests.get(
+		f"{API_BASE}/repos/{repository}/releases/latest",
+		headers=headers,
+		timeout=30,
+	)
+	if response.status_code == 404:
+		return "-", releases_url
+	if not response.ok:
+		return f"API {response.status_code}", releases_url
 
-	return rows, []
+	release_data = response.json()
+	return release_data.get("tag_name", "-"), release_data.get("html_url", releases_url)
+
+
+def fetch_repository_row(repository: str, headers: dict[str, str]) -> tuple[dict[str, str], list[str]]:
+	"""Fetch a summary row of metadata for a single host repository."""
+	errors: list[str] = []
+
+	repo_response = requests.get(f"{API_BASE}/repos/{repository}", headers=headers, timeout=30)
+	if not repo_response.ok:
+		errors.append(f"{repository}: failed to fetch repository details (HTTP {repo_response.status_code})")
+		return {
+			"Repo": repository,
+			"Default codeowner": "-",
+			"Open issues": "-",
+			"Open PRs": "-",
+			"Release version": "-",
+		}, errors
+
+	repo_data = repo_response.json()
+	repo_html_url = repo_data.get("html_url", f"https://github.com/{repository}")
+	total_open_issues_and_prs = repo_data.get("open_issues_count", 0)
+
+	open_pull_requests = fetch_open_pull_request_count(repository, headers)
+	if open_pull_requests is None:
+		errors.append(f"{repository}: failed to fetch open pull requests")
+		open_pull_requests_display = "-"
+		open_issues_display = "-"
+	else:
+		open_issues_count = max(total_open_issues_and_prs - open_pull_requests, 0)
+		open_pull_requests_display = build_link(f"{repo_html_url}/pulls", str(open_pull_requests))
+		open_issues_display = build_link(f"{repo_html_url}/issues", str(open_issues_count))
+
+	release_tag, release_url = fetch_latest_release(repository, headers)
+
+	row = {
+		"Repo": build_link(repo_html_url, repository),
+		"Default codeowner": format_codeowners(fetch_default_codeowner(repository, headers)),
+		"Open issues": open_issues_display,
+		"Open PRs": open_pull_requests_display,
+		"Release version": build_link(release_url, release_tag),
+	}
+	return row, errors
 
 
 headers = github_headers()
@@ -150,26 +179,24 @@ all_rows: list[dict[str, str]] = []
 errors: list[str] = []
 
 for repository in repositories:
-	rows, fetch_errors = fetch_open_pull_requests(repository, headers)
-	all_rows.extend(rows)
+	row, fetch_errors = fetch_repository_row(repository, headers)
+	all_rows.append(row)
 	errors.extend(fetch_errors)
 
 if not all_rows:
 	all_rows = [
 		{
 			"Repo": "-",
-			"PR title": "-",
-			"Opened by": "-",
-			"Assignee": "-",
-			"Reviewer": "-",
-			"Review status": "-",
-			"CI status": "No open pull requests",
+			"Default codeowner": "-",
+			"Open issues": "-",
+			"Open PRs": "-",
+			"Release version": "No host repositories configured",
 		}
 	]
 
 table_df = pd.DataFrame(
 	all_rows,
-	columns=["Repo", "PR title", "Opened by", "Assignee", "Reviewer", "Review status", "CI status"],
+	columns=["Repo", "Default codeowner", "Open issues", "Open PRs", "Release version"],
 )
 
 token_notice = ""
@@ -195,6 +222,9 @@ show(
 	order=[[0, "asc"]],
 	column_filters="header",
 	classes=["display", "compact", "stripe", "hover"],
+	columnDefs=[
+		{"targets": [2, 3], "width": "1%", "className": "dt-nowrap"},
+	],
 )
 ```
 
